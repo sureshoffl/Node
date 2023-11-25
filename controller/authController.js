@@ -9,7 +9,7 @@ const bcrypt = require("bcrypt");
 module.exports.login = async (req, res) => {
   try {
     const loginSchema = Joi.object({
-      username: Joi.string().required(),
+      //username: Joi.string().required(),
       email: Joi.string().email().required(),
       password: Joi.string().min(3).max(14).required(),
     });
@@ -19,18 +19,30 @@ module.exports.login = async (req, res) => {
     if (!error) {
       console.log("Login Success");
     } else {
-      console.log(error.message);
-      return res.send(error.message);
-    }
-
-    const response = await authService.login(req.body);
-
-    console.log("controller..",response)
-
-    if (!_.isEmpty(response)) {
+      // console.log(error.message);
       return res.send({
-        status: true,
-        message: "Login Success",
+        message: error.message,
+      });
+    }
+    var email = req.body.email;
+    const isUserExist = await authService.checkUser(email);
+    if (!_.isNull(isUserExist)) {
+      const response = await authService.login(req.body);
+      if (!_.isNull(response)) {
+        return res.send({
+          status: true,
+          message: "Login Success",
+        });
+      } else {
+        return res.send({
+          status: false,
+          message: "Invalid Credentials",
+        });
+      }
+    } else {
+      return res.send({
+        status: false,
+        message: "User Not Found!",
       });
     }
   } catch (error) {
@@ -43,43 +55,44 @@ module.exports.login = async (req, res) => {
   });
 };
 
-
-
 // < --- Add User --- >
 
 module.exports.adduser = async (req, res) => {
   try {
-//adduser Validation
+    //adduser Validation
     const addloginSchema = Joi.object({
       username: Joi.string().min(3).required(),
       email: Joi.string().email().required(),
-      password : Joi.string().min(8).required(),
-      address : Joi.string().optional()
-  })
-
-  const { error } = addloginSchema.validate(req.body);
-
-  if(error) {
-   return res.send({
-    status: false,
-    message: error.message  
-  })
-  }
-
-    //bcrpyt (hashing password) 
-    const salt = await bcrypt.genSalt(10);
-    const hashpassword = bcrypt.hashSync(req.body.password, salt);
-
-    const result = await authService.adduser({
-      ...req.body,
-      hashpassword: hashpassword,
+      password: Joi.string().min(8).required(),
+      address: Joi.string().optional(),
     });
 
+    const { error } = addloginSchema.validate(req.body);
+
+    if (error) {
+      return res.send({
+        status: false,
+        message: error.message,
+      });
+    }
+
+    //bcrpyt (hashing password)
+
+    // const hashpassword = bcrypt.hashSync(req.body.password, 10);
+
+    const result = await authService.adduser(req.body);
+    console.log("result", result);
+
     // console.log(hashpassword);
-    if (result.length != 0) {
+    if (result) {
       return res.send({
         status: true,
         message: "User Added Successfully",
+      });
+    } else {
+      return res.send({
+        status: false,
+        message: "Faild to add user",
       });
     }
   } catch (error) {
@@ -89,8 +102,6 @@ module.exports.adduser = async (req, res) => {
     });
   }
 };
-
-
 
 // < ----- CRUD OPERATION ----- >
 

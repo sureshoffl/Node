@@ -9,18 +9,26 @@ const bcrypt = require('bcrypt');
 //Login
 
 module.exports.login = async(props) => {
-    
-    const {username, email, password } = props
+   
     
     try {
-        const response = await db('users').select('username','email','password').andWhere({username}).andWhere({email}).andWhere({password})
+        const { email, password} = props
+        //const hashpassword = bcrypt.compare(password, password)
+        
+        const response = await db('users').select('username','email','password').where('email', email).first();
         // db.raw('SELECT * FROM users where username = ? and password = ?',[username, password])
-        console.log("response..",response)
-        return !_.isEmpty(response[0]) ? response[0] : null;
+        var orginalPassword = response.password;
+        const hashpassword = await bcrypt.compare(password, orginalPassword)
+        if(hashpassword) {
+            return true;
+        } else {
+            return null;
+        }
     }
     catch(error) {
         console.log('Error Occured', error);
     }
+    return null
 }
 
 
@@ -43,13 +51,21 @@ module.exports.login = async(props) => {
 
 //adduser 
 module.exports.adduser = async(props) => {
+    
     try {
-        const { username, email, address, hashpassword } = props
-        const result =  await db('users').insert({username, email, password:hashpassword, address  })
-        return !_.isEmpty(result[0] ? result[0] : null)
+        const { username, email, address, password } = props
+
+        const hashpassword = bcrypt.hashSync(password, 10);
+
+        const result =  await db('users').insert({username, email, address, password:hashpassword})
+        // console.log(result);
+        // return !_.isEmpty(result[0] ? result[0] : null)
+        return !_.isNull(result) ? true : null;
     } catch (error) {
        console.log(error); 
     }
+    return null
+
 }
 
 
@@ -113,11 +129,11 @@ module.exports.readProduct = async() => {
 //Update Operation
 
 module.exports.updateProduct =  async (props) => {
-    const { productPrice, id } = props
+    const {productName, productType, productPrice, id } = props
     try {
-        const update = await db('product').where({id}).update({productPrice})
+        const update = await db('product').where({id}).update({productName, productType, productPrice})
         console.log("update",update)
-        return !_.isEmpty(update[0] ? update[0] : null)
+        return !_.isEmpty(update ? update : null)
     } catch (error) {
         console.log(error);
     }
@@ -144,10 +160,10 @@ module.exports.updateProduct =  async (props) => {
 //Delete Operation
 
 module.exports.removeproduct =  async (props) => {
-    const { productName } = props
+    const { id } = props
 
     try {
-        const remove =  await db('product').where({productName}).delete()
+        const remove =  await db('product').where({id}).delete()
         console.log("remove..",remove)
         return !_.isEmpty(remove[0] ? remove[0] : null)
 
@@ -155,4 +171,19 @@ module.exports.removeproduct =  async (props) => {
         console.log(error);
     }
     return null
+}
+
+module.exports.checkUser = async (email) => {
+    try {
+        //console.log(email);
+        const result = await db('users').select('*').where('email', '=', email).first();
+        // console.log(result);
+        if(result) {
+            return true;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        
+    }
 }
