@@ -25,7 +25,9 @@ module.exports.login = async (req, res) => {
 
     const response = await authService.login(req.body);
 
-    if (response.length != 0) {
+    console.log("controller..",response)
+
+    if (!_.isEmpty(response)) {
       return res.send({
         status: true,
         message: "Login Success",
@@ -58,7 +60,10 @@ module.exports.adduser = async (req, res) => {
   const { error } = addloginSchema.validate(req.body);
 
   if(error) {
-   return res.send(error.message)
+   return res.send({
+    status: false,
+    message: error.message  
+  })
   }
 
     //bcrpyt (hashing password) 

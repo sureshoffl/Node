@@ -16,7 +16,7 @@ module.exports.login = async(props) => {
         const response = await db('users').select('username','email','password').andWhere({username}).andWhere({email}).andWhere({password})
         // db.raw('SELECT * FROM users where username = ? and password = ?',[username, password])
         console.log("response..",response)
-        return !_.isEmpty(response[0] ? response[0] : null);
+        return !_.isEmpty(response[0]) ? response[0] : null;
     }
     catch(error) {
         console.log('Error Occured', error);
