@@ -3,7 +3,13 @@ const db = require('../config');
 const knex = require('knex');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
-
+const { date } = require('joi');
+const router = require('../routes/route');
+const path = require('path');
+const multer = require('multer');
+const fs = require('fs');
+// const upload = multer({storage:storage})
+// const storage = multer.memoryStorage();
 
 
 //Login
@@ -186,4 +192,26 @@ module.exports.checkUser = async (email) => {
     } catch (error) {
         
     }
+}
+
+
+//File Upload
+
+module.exports.fileupload = async(images) => {
+
+    try {
+
+        console.log("images",images);
+        
+         const fileinsert = await db('file').insert({name:images})
+         if(fileinsert) {
+            return true;
+         } else {
+            return null;
+         }
+
+    } catch (error) {
+        console.log(error);
+    }
+    return null;
 }

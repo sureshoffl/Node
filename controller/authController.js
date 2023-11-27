@@ -3,6 +3,8 @@ const _ = require("lodash");
 const validator = require("validator");
 const Joi = require("joi");
 const bcrypt = require("bcrypt");
+const multer = require('multer')
+const lodash = require('lodash')
 
 // < --- Login --- >
 
@@ -178,3 +180,29 @@ module.exports.removeproduct = async (req, res) => {
     message: "could not deleted",
   });
 };
+
+
+//File Upload
+
+module.exports.fileupload = async (req, res) => {
+ try {
+  //console.log(req.file.path);
+  
+  const fileinsert = await authService.fileupload(req.file.path);
+  console.log(fileinsert);
+  if (!_.isNull(fileinsert)) {
+    return res.send({
+      status : true,
+      message : 'File Upload Successfully'
+    })
+  } else {
+    return res.send({
+      status : false,
+      message : 'File Upload Failed'
+    })
+  }
+ } catch (error) {
+  console.log('File Upload Failed');
+ } 
+ return null;
+}
