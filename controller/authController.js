@@ -203,6 +203,7 @@ module.exports.fileupload = async (req, res) => {
   }
  } catch (error) {
   console.log('File Upload Failed');
+  
  } 
  return null;
 }
