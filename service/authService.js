@@ -197,13 +197,13 @@ module.exports.checkUser = async (email) => {
 
 //File Upload
 
-module.exports.fileupload = async(images) => {
+module.exports.fileupload = async(files) => {
 
     try {
 
-        console.log("images",images);
+        console.log("images",files);
         
-         const fileinsert = await db('file').insert({name:images})
+         const fileinsert = await db('file').insert({name:files})
          if(fileinsert) {
             return true;
          } else {
