@@ -211,3 +211,10 @@ module.exports.fileupload = async (req, res) => {
  return null;
 }
 
+
+module.exports.fileview = async (req, res) => {
+
+  const image = await authService.fileview();
+  console.log(image);
+  return res.send(image)
+}

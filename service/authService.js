@@ -9,6 +9,7 @@ const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
 
+
 // const upload = multer({storage:storage})
 // const storage = multer.memoryStorage();
 
@@ -216,6 +217,16 @@ module.exports.fileupload = async(images) => {
         console.log(error);
     }
     return null;
+}
+
+
+//File View
+
+module.exports.fileview = async (files) => {
+    // const fileview = await db('files').select('name')
+    const response = await global.db('files').select("*",global.db.raw(`CONCAT('http://localhost:8000/', image) as imageurl`))
+    return !_.isEmpty(fileview) ? fileview : null
+    // return fileview
 }
 
 

@@ -5,6 +5,8 @@ const multer = require('multer');
 const fs = require('fs');
 const path  = require('path');
 const upload = require('../upload');
+
+
 router.get('/', (req, res)=>{
     res.send('NodeJS Started')
 })
@@ -25,6 +27,10 @@ router.delete('/delete', authController.removeproduct);
 
 router.post('/fileupload', upload.single('file'), authController.fileupload);
 
+
+
+router.get('/fileview', authController.fileview)
+// router.get("/", express.static(path.join(__dirname, "./files")));
 
 
 
