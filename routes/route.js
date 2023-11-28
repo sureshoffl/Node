@@ -4,6 +4,7 @@ const router = require('express').Router();
 const multer = require('multer');
 const fs = require('fs');
 const path  = require('path');
+const upload = require('../upload');
 router.get('/', (req, res)=>{
     res.send('NodeJS Started')
 })
@@ -22,23 +23,8 @@ router.put('/update', authController.updateProduct);
 
 router.delete('/delete', authController.removeproduct);
 
-
-//! Use of Multer
-const storage = multer.diskStorage({
-    destination: (req, file, callBack) => {
-        callBack(null, 'files')     // './public/images/' directory name where save the file
-    },
-    filename: (req, file, callBack) => {
-        callBack(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
-    }
-})
-
-const upload = multer({
-    storage: storage
-});
-
-
 router.post('/fileupload', upload.single('file'), authController.fileupload);
+
 
 
 

@@ -186,7 +186,7 @@ module.exports.removeproduct = async (req, res) => {
 
 module.exports.fileupload = async (req, res) => {
  try {
-  //console.log(req.file.path);
+  console.log(req.file.path);
   
   const fileinsert = await authService.fileupload(req.file.path);
   console.log(fileinsert);
@@ -203,7 +203,11 @@ module.exports.fileupload = async (req, res) => {
   }
  } catch (error) {
   console.log('File Upload Failed');
-  
+  res.send({
+    status : false,
+    message : 'File upload failed'
+  })
  } 
  return null;
 }
+

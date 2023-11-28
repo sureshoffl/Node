@@ -8,6 +8,7 @@ const router = require('../routes/route');
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
+
 // const upload = multer({storage:storage})
 // const storage = multer.memoryStorage();
 
@@ -62,10 +63,12 @@ module.exports.adduser = async(props) => {
         const { username, email, address, password } = props
 
         const hashpassword = bcrypt.hashSync(password, 10);
-
+        
         const result =  await db('users').insert({username, email, address, password:hashpassword})
-        // console.log(result);
+        console.log(result);
         // return !_.isEmpty(result[0] ? result[0] : null)
+        
+
         return !_.isNull(result) ? true : null;
     } catch (error) {
        console.log(error); 
@@ -194,16 +197,15 @@ module.exports.checkUser = async (email) => {
     }
 }
 
-
 //File Upload
 
-module.exports.fileupload = async(files) => {
+module.exports.fileupload = async(images) => {
 
     try {
 
-        console.log("images",files);
+        console.log("images",images);
         
-         const fileinsert = await db('file').insert({name:files})
+         const fileinsert = await db('file').insert({name:images})
          if(fileinsert) {
             return true;
          } else {
@@ -215,3 +217,5 @@ module.exports.fileupload = async(files) => {
     }
     return null;
 }
+
+
