@@ -5,6 +5,7 @@ const multer = require('multer');
 const fs = require('fs');
 const path  = require('path');
 const upload = require('../upload');
+const mailservice = require('../config/mailservice')
 
 
 router.get('/', (req, res)=>{
@@ -31,7 +32,7 @@ router.post('/fileupload', upload.single('file'), authController.fileupload);
 
 router.get('/fileview', authController.fileview);
 
-router.post('/sendmail', authController.sendingmail);
+router.post('/sendmail', authController.sendingmail)
 // router.get("/", express.static(path.join(__dirname, "./files")));
 
 

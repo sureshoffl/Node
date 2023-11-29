@@ -1,5 +1,5 @@
 const { query } = require('express');
-const db = require('../config');
+const db = require('../config/config');
 const knex = require('knex');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
@@ -232,28 +232,28 @@ module.exports.fileview = async (files) => {
 
 
 //Nodemailer for Sending Mail
-module.exports.sendingmail = async (props) => {
-    var transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: 'ssureshoffl@gmail.com',
-          pass: 'kpbf yzuz hiyy kole'
-        }
-      });
+// module.exports.sendingmail = async (props) => {
+//     var transporter = nodemailer.createTransport({
+//         service: 'gmail',
+//         auth: {
+//           user: 'ssureshoffl@gmail.com',
+//           pass: 'kpbf yzuz hiyy kole'
+//         }
+//       });
       
-      const { to, subject, text, path} = props
-      var mailOptions = {
-        from: 'ssureshoffl@gmail.com',
-        to: to,
-        subject: subject,
-        text: text
-      };
+//       const { to, subject, text, path} = props
+//       var mailOptions = {
+//         from: 'ssureshoffl@gmail.com',
+//         to: to,
+//         subject: subject,
+//         text: text
+//       };
       
-      transporter.sendMail(mailOptions, function(error, info){
-        if (error) {
-          console.log(error);
-        } else {
-          console.log('Email sent: ' + info.response);
-        }
-      });
-   }
+//       transporter.sendMail(mailOptions, function(error, info){
+//         if (error) {
+//           console.log(error);
+//         } else {
+//           console.log('Email sent: ' + info.response);
+//         }
+//       });
+//    }

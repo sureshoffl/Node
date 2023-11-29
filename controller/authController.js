@@ -5,7 +5,8 @@ const Joi = require("joi");
 const bcrypt = require("bcrypt");
 const multer = require('multer')
 const lodash = require('lodash');
-var nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
+const mailservice = require('../config/mailservice')
 
 // < --- Login --- >
 
@@ -223,7 +224,7 @@ module.exports.fileview = async (req, res) => {
 
 module.exports.sendingmail = async (req, res) => {
   try {
-    const mail = await authService.sendingmail(req.body)
+    const mail = await mailservice.sendingmail(req.body)
     res.send({
       status : true,
       message : 'Mail Sent Successfully'
