@@ -1,0 +1,59 @@
+[33mcommit 081d5a6f953aa2fe733f87426f14b848ffab4361[m[33m ([m[1;36mHEAD -> [m[1;32mdev[m[33m, [m[1;31morigin/dev[m[33m)[m
+Author: ssureshoffl <ssureshoffl@gmail.com>
+Date:   Wed Nov 29 12:43:11 2023 +0530
+
+    Nodemailer mailservice.js file added
+
+[33mcommit 99c0dbe3f480970f531f898e01673f0ac59658d8[m
+Author: ssureshoffl <ssureshoffl@gmail.com>
+Date:   Wed Nov 29 11:44:19 2023 +0530
+
+    nodemailer added
+
+[33mcommit 164accd052d193f5a25378592b74a2172ac03d3c[m
+Author: ssureshoffl <ssureshoffl@gmail.com>
+Date:   Tue Nov 28 18:03:28 2023 +0530
+
+    file view
+
+[33mcommit 3685c872b3bb1123937e1aafda773127894832ad[m
+Author: ssureshoffl <ssureshoffl@gmail.com>
+Date:   Tue Nov 28 11:19:31 2023 +0530
+
+    upload  file
+
+[33mcommit 911f7d5b679f557d4763106dd9639661bc4d2d20[m
+Author: ssureshoffl <ssureshoffl@gmail.com>
+Date:   Mon Nov 27 17:31:59 2023 +0530
+
+    file upload function -->  parameter change 'images' to 'files'
+
+[33mcommit 159ae6b404fa24376a21505ae46303350a4bf65d[m
+Author: ssureshoffl <ssureshoffl@gmail.com>
+Date:   Mon Nov 27 17:17:39 2023 +0530
+
+    fileupload
+
+[33mcommit 68a5de557d3644e26b4c32c0d7330d22fcf94795[m
+Author: ssureshoffl <ssureshoffl@gmail.com>
+Date:   Mon Nov 27 17:16:54 2023 +0530
+
+    file upload
+
+[33mcommit f7d26aa31048257f82781dcd2120192b0ba4366c[m
+Author: ssureshoffl <ssureshoffl@gmail.com>
+Date:   Sat Nov 25 17:35:58 2023 +0530
+
+    hashing and dehashing
+
+[33mcommit c9d302a3ef7197e45735ab7ea2bf73849c9cef42[m
+Author: ssureshoffl <ssureshoffl@gmail.com>
+Date:   Sat Nov 25 12:14:21 2023 +0530
+
+    response
+
+[33mcommit 6ebd320fe9b47343669942d35b47cc4125cc66b8[m
+Author: ssureshoffl <ssureshoffl@gmail.com>
+Date:   Sat Nov 25 11:16:21 2023 +0530
+
+    Initial Commit

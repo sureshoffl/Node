@@ -225,6 +225,7 @@ module.exports.fileview = async (req, res) => {
 module.exports.sendingmail = async (req, res) => {
   try {
     const mail = await mailservice.sendingmail(req.body)
+    console.log(req.body.to);
     res.send({
       status : true,
       message : 'Mail Sent Successfully'
