@@ -4,7 +4,8 @@ const validator = require("validator");
 const Joi = require("joi");
 const bcrypt = require("bcrypt");
 const multer = require('multer')
-const lodash = require('lodash')
+const lodash = require('lodash');
+var nodemailer = require('nodemailer');
 
 // < --- Login --- >
 
@@ -217,4 +218,24 @@ module.exports.fileview = async (req, res) => {
   const image = await authService.fileview();
   console.log(image);
   return res.send(image)
+}
+
+
+module.exports.sendingmail = async (req, res) => {
+  try {
+    const mail = await authService.sendingmail(req.body)
+    res.send({
+      status : true,
+      message : 'Mail Sent Successfully'
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(200).json({
+      message : 'OK'
+    })
+    return res.send({
+      status : false,
+      message : 'Mail sent Failed'   
+    })
+  }
 }

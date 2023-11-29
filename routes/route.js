@@ -29,7 +29,9 @@ router.post('/fileupload', upload.single('file'), authController.fileupload);
 
 
 
-router.get('/fileview', authController.fileview)
+router.get('/fileview', authController.fileview);
+
+router.post('/sendmail', authController.sendingmail);
 // router.get("/", express.static(path.join(__dirname, "./files")));
 
 
