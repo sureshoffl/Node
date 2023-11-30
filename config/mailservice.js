@@ -1,5 +1,4 @@
 const nodemailer = require('nodemailer');
-
 const authController = require('../controller/authController')
 
 module.exports.sendingmail = async (props) =>{

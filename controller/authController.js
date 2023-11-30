@@ -6,7 +6,8 @@ const bcrypt = require("bcrypt");
 const multer = require('multer')
 const lodash = require('lodash');
 const nodemailer = require('nodemailer');
-const mailservice = require('../config/mailservice')
+const mailservice = require('../config/mailservice');
+const jwt =  require('jsonwebtoken');
 
 // < --- Login --- >
 
@@ -21,7 +22,10 @@ module.exports.login = async (req, res) => {
     const { error } = loginSchema.validate(req.body);
 
     if (!error) {
+      
       console.log("Login Success");
+      
+      // console.log(process.env.JWT_SECRET_KEY);
     } else {
       // console.log(error.message);
       return res.send({
@@ -33,6 +37,20 @@ module.exports.login = async (req, res) => {
     if (!_.isNull(isUserExist)) {
       const response = await authService.login(req.body);
       if (!_.isNull(response)) {
+       
+        const token = jwt.sign({
+          response
+         }, 
+         process.env.JWT_SECRET_KEY,
+         {
+           expiresIn :'1hr'
+         }
+         )
+         jwt.verify(token, process.env.JWT_SECRET_KEY, function(err, docs) {
+          console.log(err);
+          console.log(docs);
+         })
+         console.log(token);        
         return res.send({
           status: true,
           message: "Login Success",

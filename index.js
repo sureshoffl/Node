@@ -1,4 +1,5 @@
 const http = require('http');
+const dotenv = require('dotenv').config()
 const express = require('express');
 const bodyParser = require('body-parser');
 const router = require('./routes/route');
@@ -41,8 +42,9 @@ const getimages = (req,res) => {
 
  app.get('/uploads//images//:path', getimages)
 
+const PORT = process.env.PORT
 
-app.listen(8000,() => {
+app.listen(PORT,() => {
     return console.log('Server is Listening');
 });
 
