@@ -14,7 +14,7 @@ router.get('/', (req, res)=>{
 
 
 
-router.post('/login',authController.login);
+router.post('/login', authController.login);
 
 router.post('/addUser',authController.adduser)
 
@@ -52,5 +52,18 @@ router.post('/sendmail', authController.sendingmail)
 //         })
 //     }
 // });
+
+
+//Queries INNER JOIN
+
+router.get('/innerjoin',authController.innerjoin);
+
+//Queries LEFT JOIN 
+
+router.get('/leftjoin', authController.leftjoin)
+
+//Employee Salary
+router.get('/employeesalary', authController.salary)
+
 
 module.exports = router;

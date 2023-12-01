@@ -10,7 +10,6 @@ const multer = require('multer');
 const fs = require('fs');
 var nodemailer = require('nodemailer');
 
-
 // const upload = multer({storage:storage})
 // const storage = multer.memoryStorage();
 
@@ -23,8 +22,7 @@ module.exports.login = async(props) => {
     try {
         const { email, password} = props
         //const hashpassword = bcrypt.compare(password, password)
-        
-        const response = await db('users').select('username','email','password').where('email', email).first();
+        const response = await knex('users').select('username','email','password').where('email', email).first();
         // db.raw('SELECT * FROM users where username = ? and password = ?',[username, password])
         var orginalPassword = response.password;
         const hashpassword = await bcrypt.compare(password, orginalPassword)
@@ -33,6 +31,7 @@ module.exports.login = async(props) => {
         } else {
             return null;
         }
+        
     }
     catch(error) {
         console.log('Error Occured', error);
@@ -257,3 +256,41 @@ module.exports.fileview = async (files) => {
 //         }
 //       });
 //    }
+
+
+//Queries
+//innerjoin
+module.exports.innerjoin = async(data) => {
+try {
+    const read =  await db('employee').select('employee.employeeName', 'employee.salary').innerJoin('employeeinfo', 'employee.employeeid','=', 'employeeinfo.employeeid')
+    console.table(read);
+    return !_.isEmpty(read) ? read : null;
+
+} catch (error) {
+    console.log(error);
+}
+return null
+}
+
+//left join
+module.exports.leftjoin = async (data) => {
+    try {
+        const read  = await db('employee').select('*').leftJoin('employeeinfo', 'employee.employeeid', '=', 'employeeinfo.employeeid')
+        console.log(read);
+        // return !_.isEmpty(read) ? read : null
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+// Employee Salary
+
+module.exports.salary = async (data) => {
+    try {
+        const salary = await db('employee').select('employeeName', 'salary').where('employee.salary', '>=', 60000);
+        return !_.isEmpty(salary) ? salary : true;
+    } catch (error) {
+        console.log(error);
+    }
+}

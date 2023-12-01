@@ -8,6 +8,10 @@ const lodash = require('lodash');
 const nodemailer = require('nodemailer');
 const mailservice = require('../config/mailservice');
 const jwt =  require('jsonwebtoken');
+const env = require('dotenv')
+
+
+
 
 // < --- Login --- >
 
@@ -35,25 +39,30 @@ module.exports.login = async (req, res) => {
     var email = req.body.email;
     const isUserExist = await authService.checkUser(email);
     if (!_.isNull(isUserExist)) {
+      
       const response = await authService.login(req.body);
+
+      const token = jwt.sign({
+        response
+       }, 
+       process.env.JWT_SECRET_KEY,
+       {
+         expiresIn :'1m'
+       }
+       )
+       jwt.verify(token, process.env.JWT_SECRET_KEY, function(err, docs) {
+        console.log(err);
+        console.log(docs);
+       })
+
       if (!_.isNull(response)) {
        
-        const token = jwt.sign({
-          response
-         }, 
-         process.env.JWT_SECRET_KEY,
-         {
-           expiresIn :'1hr'
-         }
-         )
-         jwt.verify(token, process.env.JWT_SECRET_KEY, function(err, docs) {
-          console.log(err);
-          console.log(docs);
-         })
-         console.log(token);        
+       
+         console.table({email,token}) 
         return res.send({
           status: true,
           message: "Login Success",
+          token : token
         });
       } else {
         return res.send({
@@ -76,6 +85,7 @@ module.exports.login = async (req, res) => {
     message: "Invalid Credentials",
   });
 };
+
 
 // < --- Add User --- >
 
@@ -259,3 +269,60 @@ module.exports.sendingmail = async (req, res) => {
     })
   }
 }
+
+
+module.exports.innerjoin = async (req, res) => {
+  try {
+     const read = await authService.innerjoin()
+  if(!_.isEmpty(read))
+  {
+    return res.send({
+      status : true,
+      message : 'Data Received',
+      Data : read
+    })
+  }
+  else {
+    return res.send({
+      status : false,
+      message : 'Data Received Failed'
+    })
+  }
+
+  } catch (error) {
+    console.log(error);    
+  }
+ }
+
+
+ module.exports.leftjoin = async (req, res) => {
+  try {
+    const read = await authService.leftjoin()
+    return res.send({
+      status : true,
+      message : 'Query Executed',
+      Result : read
+    })
+  } catch (error) {
+    console.log(error);
+  }  
+  return res.send({
+    status : false, 
+    message : 'Query Executed Failed'
+  })
+ }
+
+
+ //EmployeeSalary
+
+ module.exports.salary =  async (req, res) => {
+  try {
+    const salary = await authService.salary()
+    return res.send({
+      status : true,
+      values : salary
+    })
+  } catch (error) {
+    
+  }
+ }
