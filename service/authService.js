@@ -9,6 +9,7 @@ const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
 var nodemailer = require('nodemailer');
+const { log } = require('console');
 
 // const upload = multer({storage:storage})
 // const storage = multer.memoryStorage();
@@ -70,7 +71,7 @@ module.exports.adduser = async(props) => {
         // return !_.isEmpty(result[0] ? result[0] : null)
         
 
-        return !_.isNull(result) ? true : null;
+        return result
     } catch (error) {
        console.log(error); 
     }
@@ -273,11 +274,11 @@ return null
 }
 
 //left join
-module.exports.leftjoin = async (data) => {
+module.exports.leftjoin = async () => {
     try {
         const read  = await db('employee').select('*').leftJoin('employeeinfo', 'employee.employeeid', '=', 'employeeinfo.employeeid')
         console.log(read);
-        // return !_.isEmpty(read) ? read : null
+        return !_.isEmpty(read) ? read : null
     } catch (error) {
         console.log(error);
     }
@@ -289,7 +290,191 @@ module.exports.leftjoin = async (data) => {
 module.exports.salary = async (data) => {
     try {
         const salary = await db('employee').select('employeeName', 'salary').where('employee.salary', '>=', 60000);
-        return !_.isEmpty(salary) ? salary : true;
+        return !_.isEmpty(salary) ? salary : null;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+//Show Employee Details
+
+module.exports.employee = async (data) => {
+    try {
+        const { employeeName } = data
+        const showemployee = await db('employee').select('*').where('employeeName', "=", employeeName)
+        console.log(showemployee);
+        return showemployee
+      
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+module.exports.info = async(data) => {
+    try {
+        const { employeeid } = data
+        const info = await db('employeeinfo').select('*').where('employeeid', '=', employeeid)
+        console.log(info);
+        return info    
+    } catch (error) {
+        console.log(error);
+    }
+    return null;
+}
+
+module.exports.rightjoin = async() => {
+    try {
+        const result = db('employee').select('*').rightJoin('employeeinfo', 'employee.employeeid', '=', 'employeeinfo.employeeid')
+        if (!_.isEmpty(result)) {
+            return !_.isEmpty(result) ? result : null            
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+module.exports.fulljoin = async() => {
+    try {
+        const result = await db('employee').select('*').fullOuterJoin('employeeinfo', 'employee.employeeid', '=', 'employeeinfo.employeeid');
+        console.log(result);
+            return !_.isEmpty(result) ? result : null
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+module.exports.crossjoin = async () => {
+    try {
+        const result =  await db('employee').select('*').crossJoin('employeeinfo', 'employee.employeeid', '=', 'employeeinfo.employeeid');
+        return !_.isEmpty(result) ? result : null;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+module.exports.selfjoin = async() => {
+    try {
+        // const result = await db('employee').select('*').selfJoin('employeeinfo', 'employee.employeeid', '=', 'employeeinfo.employeeid');
+       const result = await db.raw('SELECT * FROM employee e JOIN employeeinfo ei ON e.employeeid = ei.employeeid')
+        return !_.isEmpty(result) ? result : null;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+module.exports.min = async() => {
+    try {
+        const min = await db('employee').select('*').min('salary')
+        return !_.isEmpty(min) ? min : null
+    } catch (error) {
+        console.log(error);       
+    }
+}
+
+module.exports.max = async() => {
+    try {
+        const max = await db('employee').select('*').max('salary')
+        return !_.isEmpty(max) ? max : null
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+module.exports.avg = async() => {
+    try {
+        const avg = await db('employee').select('*').avg('salary')
+        return !_.isEmpty(avg) ? avg : null
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+module.exports.count = async() => {
+    try {
+        const avg = await db('employee').select('salary').count('salary')
+        return !_.isEmpty(avg) ? avg : null
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+module.exports.offset = async() => {
+    try {
+        const offset = await db('employee').select('*').offset(3);
+        const limit = await db('employee').select('*').limit(5)
+        return !_.isEmpty(offset) ? offset : null;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+module.exports.limit = async() => {
+    try {
+        const limit = await db('employee').select('*').limit(5)
+        return !_.isEmpty(limit) ? limit : null;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+module.exports.groupby = async() => {
+    try {
+        const groupby = await db('employee').select('EmployeeName', 'Age', 'Position', 'Salary').groupBy('salary');
+        return !_.isEmpty(groupby) ? groupby : null;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+module.exports.orderby = async() => {
+    try {
+        const groupby = await db('employee').select('EmployeeName', 'Age', 'Position', 'Salary').orderBy('Age');
+        return !_.isEmpty(groupby) ? groupby : null;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+module.exports.case = async() => {
+    try {
+        const casequery = await db.raw(`SELECT Salary, CASE WHEN salary > 60000 THEN 'High' WHEN salary < 60000 THEN 'Low' ELSE 'Basic' END AS SalaryType FROM employee`)
+        return !_.isEmpty(casequery) ? casequery : null
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+module.exports.distinct = async() => {
+    try {
+        const distinctquery = await db('employee').select('*').distinct('age');
+        return !_.isEmpty(distinctquery) ? distinctquery : null
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+module.exports.addemployee = async(props) => {
+    try {
+        const { employeeid, employeeName, age, email, mobileNo, city, state, position, salary } = props
+        const result = await db('employee').insert({ employeeid, employeeName, age, email, mobileNo, city,  state, position, salary });
+        return !_.isEmpty(result) ? result : null
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+module.exports.date =  async(props) => {
+    try {
+        const { created } = props
+        const result = await db.raw(`SELECT * FROM employee WHERE created BETWEEN ? AND ?`,[ created ])
+        console.log(created);
+        return result = !_.isEmpty(result) ? result : null
     } catch (error) {
         console.log(error);
     }

@@ -8,7 +8,10 @@ const lodash = require('lodash');
 const nodemailer = require('nodemailer');
 const mailservice = require('../config/mailservice');
 const jwt =  require('jsonwebtoken');
-const env = require('dotenv')
+const env = require('dotenv');
+const logger = require('../config/logger');
+const { error } = require("winston");
+const { response } = require("express");
 
 
 
@@ -276,6 +279,7 @@ module.exports.innerjoin = async (req, res) => {
      const read = await authService.innerjoin()
   if(!_.isEmpty(read))
   {
+    res.status(200)
     return res.send({
       status : true,
       message : 'Data Received',
@@ -298,6 +302,15 @@ module.exports.innerjoin = async (req, res) => {
  module.exports.leftjoin = async (req, res) => {
   try {
     const read = await authService.leftjoin()
+    const inner = await authService.innerjoin()
+    if(!_.isEmpty(read) && !_.isEmpty(inner) ){
+       return res.send({
+        status: true,
+        message: "Success!",
+        leftJoin: read,
+        inner : inner
+       })
+    }
     return res.send({
       status : true,
       message : 'Query Executed',
@@ -318,11 +331,268 @@ module.exports.innerjoin = async (req, res) => {
  module.exports.salary =  async (req, res) => {
   try {
     const salary = await authService.salary()
+    res.status(200)
     return res.send({
       status : true,
       values : salary
     })
   } catch (error) {
-    
+    console.log(error);
   }
  }
+
+
+ module.exports.employee = async (req, res) => {
+  try {
+    const employee = await authService.employee(req.body)
+    console.log(employee);
+    res.status(200)
+    return res.send({
+      status : true,
+      values : employee
+    })
+  } catch (error) {
+    console.log(error);
+  }
+
+  
+ }
+
+ module.exports.info = async (req, res) => {
+  try {
+    const info = await authService.info(req.body)
+    return res.send({
+      status : true,
+      value : info
+    })
+  } catch (error) {
+    logger.error(error)
+  }
+  
+
+}
+
+
+module.exports.rightjoin = async (req, res) => {
+  try {
+    const result = await authService.rightjoin()
+    if (!_.isEmpty(result)) {
+      return res.send({
+        status : true,
+        message : 'Success',
+        Response : result
+      })
+    } 
+  } catch (error) {
+   logger(error)
+  }
+}
+
+module.exports.fulljoin = async (req, res) => {
+  try {
+    const result = await authService.fulljoin()
+    if(!_.isEmpty(result)) {
+     return res.send({
+        status : true,
+        message : 'Success',
+        Response : result
+      })
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+module.exports.crossjoin = async (req, res) => {
+  try {
+    const result = await authService.crossjoin()
+    if (!_.isEmpty(result)) {
+      return res.send({
+        status : true,
+        Message : 'Success',
+        Response : result
+      })
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  return res.send({
+    status : false,
+    message : 'Failed'
+  })
+}
+
+
+module.exports.selfjoin = async (req, res) => {
+  try {
+    const result = await authService.selfjoin()
+    if (!_.isEmpty(result)) {
+      return res.send({
+        status : true,
+        Message : 'Success',
+        Response : result
+      })
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  return res.send({
+    status : false,
+    message : 'Failed'
+  })
+}
+
+
+module.exports.min = async (req, res) => {
+  try {
+    const min = await authService.min()
+    if (!_.isEmpty(min)) {
+      return res.send({
+        status : true,
+        Message : 'Success',
+        Response : min
+      })
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  return res.send({
+    status : false,
+    message : 'Failed'
+  })
+}
+
+module.exports.max = async (req, res) => {
+  try {
+    const max = await authService.max()
+    if (!_.isEmpty(max)) {
+      return res.send({
+        status : true,
+        Message : 'Success',
+        Response : max
+      })
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  return res.send({
+    status : false,
+    message : 'Failed'
+  })
+}
+
+module.exports.avg = async (req, res) => {
+  try {
+    const avg = await authService.avg()
+    if (!_.isEmpty(avg)) {
+      return res.send({
+        status : true,
+        Message : 'Success',
+        Response : avg
+      })
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  return res.send({
+    status : false,
+    message : 'Failed'
+  })
+}
+
+
+
+module.exports.queries = async (req, res) => {
+  try {
+    const min = await authService.min()
+    const max = await authService.max() 
+    const avg = await authService.avg()
+    const count = await authService.count()
+    const offset = await authService.offset()
+    const limit = await authService.limit()
+    const groupby = await authService.groupby()
+    const orderby = await authService.orderby()
+    const distinctquery = await authService.distinct()
+
+      return res.send({
+        status : true,
+        Message : 'Success',
+        minResponse : min,
+        maxResponse : max,
+        avgResponse : avg,
+        countResponse : count,
+        offsetResponse : offset,
+        limitResonse : limit,
+        groupbyResponse  : groupby,
+        orderbyResponse : orderby,
+        distinctResponse : distinctquery   
+      })
+  } catch (error) {
+    console.log(error);
+  }
+  return res.send({
+    status : false,
+    message : 'Failed'
+  })
+}
+
+
+module.exports.case = async (req, res) => {
+  try {
+    const result = await authService.case()
+    if (!_.isEmpty(result)) {
+      return res.send({
+        status : true,
+        Message : 'Success',
+        Response : result
+      })
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  return res.send({
+    status : false,
+    message : 'Failed'
+  })
+}
+
+
+module.exports.addemployee =  async (req, res) => {
+  try {
+    const result = await authService.addemployee(req.body)
+    if (!_.isEmpty(result)) {
+      return res.send({
+        status : true,
+        message : "Success",
+        Response : result
+      })
+    }
+  } catch (error) {
+    console.log(error);   
+  }
+  return res.send({
+    status : false,
+    message : 'Failed'
+  })
+}
+
+
+module.exports.date = async (req, res) => {
+  try {
+    const result = await authService.date(req.body)
+  if(!_.isEmpty(result)) {
+    return res.send({
+      status : true,
+      message : 'Success',
+      Response : result
+    })
+  }
+  } catch (error) {
+    console.log(error);   
+  }
+  return res.send({
+    status : false,
+    message : 'Failed'
+  })
+}

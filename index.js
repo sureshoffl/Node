@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const router = require('./routes/route');
 const mysql = require('mysql');
 const app = express();
-const cors=require('cors')
+const cors=require('cors');
 
 app.use(cors())
 app.use(bodyParser.json());
@@ -21,7 +21,7 @@ app.use(express.static('files'));
 
 // module.exports = app;
 
-app.use('/', router);
+app.use('/', router);                                                                                       
 
 
 

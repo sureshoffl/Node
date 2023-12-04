@@ -60,10 +60,43 @@ router.get('/innerjoin',authController.innerjoin);
 
 //Queries LEFT JOIN 
 
-router.get('/leftjoin', authController.leftjoin)
+router.get('/leftjoin', authController.leftjoin);
 
 //Employee Salary
-router.get('/employeesalary', authController.salary)
+router.get('/employeesalary', authController.salary);
 
+//ShowEmployee
+router.get('/employee', authController.employee);
+
+//Employee Info
+router.get('/employeeinfo', authController.info);
+
+//addemployee
+router.post('/addemployee', authController.addemployee);
+
+//Right Join
+router.get('/rightjoin', authController.rightjoin);
+
+//fulljoin
+router.get('/fulljoin', authController.fulljoin);
+
+//crossjoin
+router.get('/crossjoin', authController.crossjoin);
+
+//selfjoin
+router.get('/selfjoin', authController.selfjoin);
+
+//min
+router.get('/selfjoin', authController.queries);
+
+//queries
+router.get('/queries', authController.queries)
+
+//Case Statement
+router.get('/case', authController.case);
+
+
+//fetching date between
+router.get('/date', authController.date)
 
 module.exports = router;
