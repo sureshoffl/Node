@@ -39,29 +39,32 @@ module.exports.login = async (req, res) => {
         message: error.message,
       });
     }
-    var email = req.body.email;
+    const email = req.body.email;
     const isUserExist = await authService.checkUser(email);
+    
     if (!_.isNull(isUserExist)) {
       
-      const response = await authService.login(req.body);
 
-      const token = jwt.sign({
-        response
-       }, 
-       process.env.JWT_SECRET_KEY,
-       {
-         expiresIn :'1m'
-       }
-       )
-       jwt.verify(token, process.env.JWT_SECRET_KEY, function(err, docs) {
-        console.log(err);
-        console.log(docs);
-       })
+
+      const response = await authService.login(req.body);
+      
+      // const token = jwt.sign({
+      //   email : email 
+      //  }, 
+      //  process.env.JWT_SECRET_KEY,
+      //  {
+      //    expiresIn :'1hr'
+      //  }
+      //  );
+
+      //  isUserExist.token = token
+
+      //  jwt.verify(token, process.env.JWT_SECRET_KEY, function(err, docs) {
+      //   console.log(err);
+      //   console.log(docs);
+      //  })
 
       if (!_.isNull(response)) {
-       
-       
-         console.table({email,token}) 
         return res.send({
           status: true,
           message: "Login Success",
@@ -581,6 +584,7 @@ module.exports.addemployee =  async (req, res) => {
 module.exports.date = async (req, res) => {
   try {
     const result = await authService.date(req.body)
+    console.log(result);
   if(!_.isEmpty(result)) {
     return res.send({
       status : true,
@@ -592,6 +596,171 @@ module.exports.date = async (req, res) => {
     console.log(error);   
   }
   return res.send({
+    status : false,
+    message : 'Failed'
+  })
+}
+
+
+module.exports.rank = async(req, res) => {
+  try {
+    const result = await authService.rank()
+    console.log(result);
+    if (!_.isEmpty(result)) {
+      return res.send({
+        status : true,
+        message : 'Success',
+        response : result
+      })  
+    }
+    
+  } catch (error) {
+    console.log(error);
+  }
+  return res.send({
+    status : false,
+    message : 'Failed'
+  })
+}
+
+module.exports.denserank = async(req, res) => {
+  try {
+    const result = await authService.denserank()
+    if (!_.isEmpty(result)) {
+      return res.send({
+        status : true,
+        message : 'Success',
+        response : result
+      })  
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  return res.send({
+    status : false,
+    message : 'Failed'
+  })
+}
+
+
+module.exports.highestsalary = async(req, res) => {
+  try {
+    const result = await authService.highestsalary()
+    console.log(result);
+    if (!_.isEmpty(result)) {
+      return res.send({
+        status : true,
+        message : 'Success',
+        response : result
+      })  
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  res.send({
+    status : false,
+    message : 'Failed'
+  })
+}
+
+module.exports.query1 = async(req, res) => {
+  try {
+    const result = await authService.query1(req.body)
+    console.log(result);
+    if (!_.isEmpty(result)) {
+      return res.send({
+        status : true,
+        message : 'Success',
+        response : result
+      })  
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  res.send({
+    status : false,
+    message : 'Failed'
+  })
+}
+
+
+module.exports.query2 = async(req, res) => {
+  try {
+    const result = await authService.query2(req.body)
+    console.log(result);
+    if (!_.isEmpty(result)) {
+      return res.send({
+        status : true,
+        message : 'Success',
+        response : result
+      })  
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  res.send({
+    status : false,
+    message : 'Failed'
+  })
+}
+
+
+module.exports.query3 = async(req, res) => {
+  try {
+    const result = await authService.query3(req.body)
+    console.log(result);
+    if (!_.isEmpty(result)) {
+      return res.send({
+        status : true,
+        message : 'Success',
+        response : result
+      })  
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  res.send({
+    status : false,
+    message : 'Failed'
+  })
+}
+
+
+module.exports.query4 = async(req, res) => {
+  try {
+    const result = await authService.query4(req.body)
+    console.log(result);
+    if (!_.isEmpty(result)) {
+      return res.send({
+        status : true,
+        message : 'Success',
+        response : result
+      })  
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  res.send({
+    status : false,
+    message : 'Failed'
+  })
+}
+
+module.exports.duplicate = async(req, res) => {
+  try {
+    const result = await authService.duplicate(req.body)
+    console.log(result);
+    if (!_.isEmpty(result)) {
+      return res.send({
+        status : true,
+        message : 'Success',
+        response : result
+      })  
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  res.send({
     status : false,
     message : 'Failed'
   })

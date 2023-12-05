@@ -1,15 +1,12 @@
-const { query } = require('express');
+
 const db = require('../config/config');
 const knex = require('knex');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
-const { date } = require('joi');
-const router = require('../routes/route');
-const path = require('path');
-const multer = require('multer');
-const fs = require('fs');
-var nodemailer = require('nodemailer');
-const { log } = require('console');
+const jwt = require('jsonwebtoken');
+const mysql = require('mysql');
+const sqllite =  require('sqlite3')
+
 
 // const upload = multer({storage:storage})
 // const storage = multer.memoryStorage();
@@ -21,12 +18,28 @@ module.exports.login = async(props) => {
    
     
     try {
-        const { email, password} = props
+        
+        const { email, password } = props
         //const hashpassword = bcrypt.compare(password, password)
-        const response = await knex('users').select('username','email','password').where('email', email).first();
+        const response = await knex('users').select('email','password').where('email', email).first();
         // db.raw('SELECT * FROM users where username = ? and password = ?',[username, password])
         var orginalPassword = response.password;
         const hashpassword = await bcrypt.compare(password, orginalPassword)
+        const token = jwt.sign({
+            email : email 
+           }, 
+           process.env.JWT_SECRET_KEY,
+           {
+             expiresIn :'1hr'
+           }
+           );
+    
+           isUserExist.token = token
+    
+           jwt.verify(token, process.env.JWT_SECRET_KEY, function(err, docs) {
+            console.log(err);
+            console.log(docs);
+           })
         if(hashpassword) {
             return true;
         } else {
@@ -38,6 +51,21 @@ module.exports.login = async(props) => {
         console.log('Error Occured', error);
     }
     return null
+}
+
+module.exports.checkUser = async (email) => {
+    try {
+        //console.log(email);
+        const result = await db('users').select('*').where('email', '=', email).first();
+        // console.log(result);
+        if(result) {
+            return true;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 
@@ -184,20 +212,20 @@ module.exports.removeproduct =  async (props) => {
     return null
 }
 
-module.exports.checkUser = async (email) => {
-    try {
-        //console.log(email);
-        const result = await db('users').select('*').where('email', '=', email).first();
-        // console.log(result);
-        if(result) {
-            return true;
-        } else {
-            return null;
-        }
-    } catch (error) {
+// module.exports.checkUser = async (email) => {
+//     try {
+//         //console.log(email);
+//         const result = await db('users').select('*').where('email', '=', email).first();
+//         // console.log(result);
+//         if(result) {
+//             return true;
+//         } else {
+//             return null;
+//         }
+//     } catch (error) {
         
-    }
-}
+//     }
+// }
 
 //File Upload
 
@@ -422,7 +450,7 @@ module.exports.limit = async() => {
 
 module.exports.groupby = async() => {
     try {
-        const groupby = await db('employee').select('EmployeeName', 'Age', 'Position', 'Salary').groupBy('salary');
+        const groupby = await db('employee').select('EmployeeName', 'Age', 'Position', 'Salary').groupBy('Position');
         return !_.isEmpty(groupby) ? groupby : null;
     } catch (error) {
         console.log(error);
@@ -450,7 +478,7 @@ module.exports.case = async() => {
 
 module.exports.distinct = async() => {
     try {
-        const distinctquery = await db('employee').select('*').distinct('age');
+        const distinctquery = await db('employee').select('employeeid').distinct('employeeid');
         return !_.isEmpty(distinctquery) ? distinctquery : null
     } catch (error) {
         console.log(error);
@@ -471,10 +499,122 @@ module.exports.addemployee = async(props) => {
 
 module.exports.date =  async(props) => {
     try {
-        const { created } = props
-        const result = await db.raw(`SELECT * FROM employee WHERE created BETWEEN ? AND ?`,[ created ])
-        console.log(created);
-        return result = !_.isEmpty(result) ? result : null
+        const { start, end } = props
+        const result = await db.raw(`SELECT * FROM employee WHERE created BETWEEN ? AND ?`,[start, end])
+        console.log(result);
+        return !_.isEmpty(result) ? result : null
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+module.exports.rank = async() => {
+    try {
+        const result = await db('employee').select('*').rank('rank', 'salary');
+        return !_.isEmpty(result) ? result : null
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+module.exports.denserank = async() => {
+    try {
+        const result = await db('employee').select('*').denseRank('denserank', 'salary');
+        return !_.isEmpty(result) ? result : null
+    } catch (error) {
+        return error
+    }
+}
+
+//fetching top salaries
+module.exports.highestsalary = async() => {
+    try {
+        const result = await db('employee').select('*').rank('rank', function() {
+            this.partitionBy('salary', 'desc').orderBy('salary');
+        })
+            console.log(result);
+            return  !_.isEmpty(result) ? result : null
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+//Query 1 top salaries
+module.exports.query1 = async(props) => {
+    try {
+        const { rank } = props 
+        const result = await db.raw(`WITH employee_ranking AS 
+                        (SELECT employeeName, employeeid,  position, 
+                        salary,RANK() OVER (ORDER BY salary DESC) AS ranking FROM employee)
+                       SELECT employeeName, employeeid, position, salary, ranking FROM employee_ranking 
+                       WHERE ranking <= ? ORDER BY ranking`, [rank]);
+
+                       return !_.isEmpty(result) ? result[0] : null;
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+//Query 2 lowest salaries
+module.exports.query2 = async(props) => {
+    try {
+        const { rank } = props 
+        const result = await db.raw(`WITH employee_ranking AS (SELECT employeeName, employeeid, position, 
+                       salary,RANK() OVER (ORDER BY salary ASC) AS ranking FROM employee)
+                       SELECT employeeName, employeeid,  position, salary, ranking FROM employee_ranking 
+                       WHERE ranking <= ? ORDER BY ranking`, [rank]);
+
+                       return !_.isEmpty(result) ? result : null;
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+//Query 3 
+module.exports.query3 = async(props) => {
+    try {
+        const { rank } = props 
+        const result = await db.raw(`WITH employee_ranking AS (SELECT employeeName, employeeid, position, 
+                       salary,RANK() OVER (ORDER BY salary ASC) AS ranking FROM employee)
+                       SELECT employeeName, employeeid,  position, salary, ranking FROM employee_ranking 
+                       WHERE ranking <= ? ORDER BY ranking, salary`, [rank]);
+
+                       return !_.isEmpty(result) ? result : null;
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+//NTILE  based on divided by entire result set using integer parameter
+module.exports.query4 = async(props) => {
+    try {
+        const { ntile } = props
+        const result = await db.raw(
+                                  `WITH employee_ranking AS (SELECT employeeName, employeeid, position, 
+                                    salary,NTILE(2) OVER (ORDER BY salary ASC) AS ranking FROM employee)
+                                    SELECT employeeName, employeeid,  position, salary, ranking FROM employee_ranking 
+                                    WHERE ranking = ? ORDER BY salary`, [ntile]);
+        return !_.isEmpty(result) ? result : nulll;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+//Find Duplicate Records
+module.exports.duplicate = async(props) => {
+
+    try {
+        const { count } = props
+        const result = await db('employee').select('*').groupBy('position').having('age', '<', count)
+        return !_.isEmpty(result) ? result : null
     } catch (error) {
         console.log(error);
     }

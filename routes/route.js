@@ -14,7 +14,7 @@ router.get('/', (req, res)=>{
 
 
 
-router.post('/login', authController.login);
+router.post('/login',authController.login);
 
 router.post('/addUser',authController.adduser)
 
@@ -97,6 +97,24 @@ router.get('/case', authController.case);
 
 
 //fetching date between
-router.get('/date', authController.date)
+router.get('/date', authController.date);
+
+//rank
+router.get('/rank', authController.rank);
+
+//denserank
+router.get('/denserank', authController.denserank)
+
+router.get('/query', authController.highestsalary)
+
+router.get('/query1', authController.query1);
+
+router.get('/query2', authController.query2);
+
+router.get('/query3', authController.query3);
+
+router.get('/query4', authController.query4);
+
+router.get('/duplicate', authController.duplicate);
 
 module.exports = router;
