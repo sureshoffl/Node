@@ -4,9 +4,13 @@ const knex = require('knex');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const mysql = require('mysql');
-const sqllite =  require('sqlite3')
-
+const router = require('../routes/route');
+const path = require('path');
+const multer = require('multer');
+const fs = require('fs');
+var nodemailer = require('nodemailer');
+const { log } = require('console');
+const e = require('express');
 
 // const upload = multer({storage:storage})
 // const storage = multer.memoryStorage();
@@ -18,53 +22,24 @@ module.exports.login = async(props) => {
    
     
     try {
+        const { email, password} = props
         
-        const { email, password } = props
         //const hashpassword = bcrypt.compare(password, password)
-        const response = await knex('users').select('email','password').where('email', email).first();
+        const response = await db('users').select('email','password').where('email', email).first();
         // db.raw('SELECT * FROM users where username = ? and password = ?',[username, password])
         var orginalPassword = response.password;
         const hashpassword = await bcrypt.compare(password, orginalPassword)
-        const token = jwt.sign({
-            email : email 
-           }, 
-           process.env.JWT_SECRET_KEY,
-           {
-             expiresIn :'1hr'
-           }
-           );
-    
-           isUserExist.token = token
-    
-           jwt.verify(token, process.env.JWT_SECRET_KEY, function(err, docs) {
-            console.log(err);
-            console.log(docs);
-           })
-        if(hashpassword) {
-            return true;
-        } else {
-            return null;
+
+        const token = jwt.sign({ email: email}, process.env.JWT_SECRET_KEY,{
+            expiresIn : '1h'
         }
+        )
+        response.token = token
+        return !_.isEmpty(response) ? response : null
         
     }
     catch(error) {
         console.log('Error Occured', error);
-    }
-    return null
-}
-
-module.exports.checkUser = async (email) => {
-    try {
-        //console.log(email);
-        const result = await db('users').select('*').where('email', '=', email).first();
-        // console.log(result);
-        if(result) {
-            return true;
-        } else {
-            return null;
-        }
-    } catch (error) {
-        console.log(error);
     }
 }
 
@@ -95,11 +70,8 @@ module.exports.adduser = async(props) => {
         const hashpassword = bcrypt.hashSync(password, 10);
         
         const result =  await db('users').insert({username, email, address, password:hashpassword})
-        console.log(result);
-        // return !_.isEmpty(result[0] ? result[0] : null)
-        
-
-        return result
+   
+      return !_.isEmpty(result[0] ? result[0] : null)
     } catch (error) {
        console.log(error); 
     }
@@ -209,23 +181,22 @@ module.exports.removeproduct =  async (props) => {
     } catch (error) {
         console.log(error);
     }
-    return null
 }
 
-// module.exports.checkUser = async (email) => {
-//     try {
-//         //console.log(email);
-//         const result = await db('users').select('*').where('email', '=', email).first();
-//         // console.log(result);
-//         if(result) {
-//             return true;
-//         } else {
-//             return null;
-//         }
-//     } catch (error) {
-        
-//     }
-// }
+module.exports.checkUser = async (email) => {
+    try {
+        //console.log(email);
+        const result = await db('users').select('*').where('email', '=', email).first();
+        // console.log(result);
+        if(result) {
+            return true;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 //File Upload
 
@@ -613,9 +584,30 @@ module.exports.duplicate = async(props) => {
 
     try {
         const { count } = props
-        const result = await db('employee').select('*').groupBy('position').having('age', '<', count)
+        const result = await db('employee').select('*').groupBy('position').having('age', '<', 30)
         return !_.isEmpty(result) ? result : null
     } catch (error) {
         console.log(error);
     }
 }
+
+
+module.exports.signin = async(props) => {
+    try {
+        const { email, password } = props
+        var orginalPassword = password;
+        const hashpassword = await bcrypt.compare(password, orginalPassword)
+        const result = await db('users').select('email','password').where('email',  email).first();
+   
+        const token = jwt.sign({email:email}, process.env.JWT_SECRET_KEY,{ expiresIn : '1h'});
+        const refreshToken = jwt.sign({email:email}, process.env.JWT_SECRET_KEY, { expiresIn : '2h'}
+        )
+        console.log(token);
+        result.token = token
+        result.refreshToken = refreshToken
+        return !_.isEmpty(result) ? result : null;
+    } catch (error) {
+        console.log(error);
+    }
+}
+

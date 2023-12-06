@@ -6,7 +6,9 @@ const fs = require('fs');
 const path  = require('path');
 const upload = require('../upload');
 const mailservice = require('../config/mailservice')
-
+const verifyToken = require("../middleware/auth");
+const auth = require('../middleware/logauth');
+const refreshToken = require('../middleware/refreshauth');
 
 router.get('/', (req, res)=>{
     res.send('NodeJS Started')
@@ -20,7 +22,7 @@ router.post('/addUser',authController.adduser)
 
 router.post('/product', authController.createProduct);
 
-router.get('/read', authController.readProduct);
+router.get('/read', verifyToken , authController.readProduct);
 
 router.put('/update', authController.updateProduct);
 
@@ -60,10 +62,10 @@ router.get('/innerjoin',authController.innerjoin);
 
 //Queries LEFT JOIN 
 
-router.get('/leftjoin', authController.leftjoin);
+router.get('/leftjoin', auth, authController.leftjoin);
 
 //Employee Salary
-router.get('/employeesalary', authController.salary);
+router.get('/employeesalary', refreshToken, authController.salary);
 
 //ShowEmployee
 router.get('/employee', authController.employee);
@@ -116,5 +118,9 @@ router.get('/query3', authController.query3);
 router.get('/query4', authController.query4);
 
 router.get('/duplicate', authController.duplicate);
+
+router.get('/signin', authController.signin);
+
+
 
 module.exports = router;

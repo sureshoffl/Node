@@ -28,60 +28,25 @@ module.exports.login = async (req, res) => {
 
     const { error } = loginSchema.validate(req.body);
 
-    if (!error) {
-      
-      console.log("Login Success");
-      
-      // console.log(process.env.JWT_SECRET_KEY);
-    } else {
-      // console.log(error.message);
+    if(error){
       return res.send({
+        status : false,
         message: error.message,
       });
     }
-    const email = req.body.email;
-    const isUserExist = await authService.checkUser(email);
-    
-    if (!_.isNull(isUserExist)) {
+
       
-
-
       const response = await authService.login(req.body);
-      
-      // const token = jwt.sign({
-      //   email : email 
-      //  }, 
-      //  process.env.JWT_SECRET_KEY,
-      //  {
-      //    expiresIn :'1hr'
-      //  }
-      //  );
-
-      //  isUserExist.token = token
-
-      //  jwt.verify(token, process.env.JWT_SECRET_KEY, function(err, docs) {
-      //   console.log(err);
-      //   console.log(docs);
-      //  })
 
       if (!_.isNull(response)) {
+       
         return res.send({
           status: true,
           message: "Login Success",
-          token : token
+          response
         });
-      } else {
-        return res.send({
-          status: false,
-          message: "Invalid Credentials",
-        });
-      }
-    } else {
-      return res.send({
-        status: false,
-        message: "User Not Found!",
-      });
-    }
+      } 
+    
   } catch (error) {
     console.log("error", error);
   }
@@ -113,11 +78,7 @@ module.exports.adduser = async (req, res) => {
         message: error.message,
       });
     }
-
-    //bcrpyt (hashing password)
-
-    // const hashpassword = bcrypt.hashSync(req.body.password, 10);
-
+    
     const result = await authService.adduser(req.body);
     console.log("result", result);
 
@@ -126,13 +87,10 @@ module.exports.adduser = async (req, res) => {
       return res.send({
         status: true,
         message: "User Added Successfully",
+        response : result,
       });
-    } else {
-      return res.send({
-        status: false,
-        message: "Faild to add user",
-      });
-    }
+    } 
+
   } catch (error) {
     return res.send({
       status: false,
@@ -306,6 +264,14 @@ module.exports.innerjoin = async (req, res) => {
   try {
     const read = await authService.leftjoin()
     const inner = await authService.innerjoin()
+      const verifytoken = (req, res, next) => {
+        const token = req.body.token || req.body.token || req.headers["e-access-token"];
+        const verifytoken =jwt.verify(token, process.env.JWT_SECRET_KEY);
+        console.log(verifytoken);
+        req.isUserExist = decoded
+      }
+   
+
     if(!_.isEmpty(read) && !_.isEmpty(inner) ){
        return res.send({
         status: true,
@@ -765,3 +731,40 @@ module.exports.duplicate = async(req, res) => {
     message : 'Failed'
   })
 }
+
+
+module.exports.signin = async(req, res) => {
+  try {
+
+      const loginSchema = Joi.object({
+          email: Joi.string().email().required(),
+          password: Joi.string().min(3).max(14).required(),
+        });
+    
+        const { error } = loginSchema.validate(req.body);
+    
+        if(error){
+          return res.send({
+            status : false,
+            message: error.message,
+          });
+        }
+    
+      const result = await authService.signin(req.body)
+      if (!_.isEmpty(result)) {
+          return res.send({
+              status : true,
+              message : "Success",
+              result
+          })
+      }
+  } catch (error) {
+      console.log(error);
+  }
+  return res.send({
+      status : false,
+      message : 'Login Failed'
+  })
+}
+
+
