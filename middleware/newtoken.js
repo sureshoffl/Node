@@ -1,7 +1,7 @@
-const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken")
 
-const refreshToken = (req, res, next) => {
-  const token = req.headers["auth"];
+const newtoken = (req, res, next) => {
+  const token = req.headers["token"];
   console.log("token..",token)
   if (!token) {
     return res.status(403).send("A token is required for authentication");
@@ -17,5 +17,4 @@ const refreshToken = (req, res, next) => {
   return next();
 };
 
-
-module.exports = refreshToken;
+module.exports = newtoken;

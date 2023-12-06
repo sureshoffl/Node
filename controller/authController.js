@@ -768,3 +768,17 @@ module.exports.signin = async(req, res) => {
 }
 
 
+module.exports.token = async(req, res) => {
+  try {
+    const newToken = await authService.token(req.headers)
+    if(!_.isEmpty(newToken)){
+      res.send({
+        status : true,
+      newtoken : newToken
+      })
+    }
+    
+  } catch (error) {
+    console.log(error);
+  }
+}

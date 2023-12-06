@@ -9,7 +9,8 @@ const mailservice = require('../config/mailservice')
 const verifyToken = require("../middleware/auth");
 const auth = require('../middleware/logauth');
 const refreshToken = require('../middleware/refreshauth');
-
+const newtoken = require('../middleware/newtoken');
+const logverifyToken = require('../middleware/logauth');
 router.get('/', (req, res)=>{
     res.send('NodeJS Started')
 })
@@ -58,14 +59,14 @@ router.post('/sendmail', authController.sendingmail)
 
 //Queries INNER JOIN
 
-router.get('/innerjoin',authController.innerjoin);
+router.get('/innerjoin',  refreshToken,  authController.innerjoin);
 
 //Queries LEFT JOIN 
 
 router.get('/leftjoin', auth, authController.leftjoin);
 
 //Employee Salary
-router.get('/employeesalary', refreshToken, authController.salary);
+router.get('/employeesalary', refreshToken,  authController.salary);
 
 //ShowEmployee
 router.get('/employee', authController.employee);
@@ -119,8 +120,6 @@ router.get('/query4', authController.query4);
 
 router.get('/duplicate', authController.duplicate);
 
-router.get('/signin', authController.signin);
-
-
+router.get('/signin',  authController.signin);
 
 module.exports = router;
