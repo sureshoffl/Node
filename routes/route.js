@@ -59,7 +59,7 @@ router.post('/sendmail', authController.sendingmail)
 
 //Queries INNER JOIN
 
-router.get('/innerjoin',  refreshToken,  authController.innerjoin);
+router.get('/innerjoin',  refreshToken, authController.innerjoin);
 
 //Queries LEFT JOIN 
 
