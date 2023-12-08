@@ -1,4 +1,4 @@
-const http = require('http');
+
 const dotenv = require('dotenv').config()
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -6,6 +6,11 @@ const router = require('./routes/route');
 const mysql = require('mysql');
 const app = express();
 const cors=require('cors');
+
+const server = require('http').createServer(app)
+const io = require('socket.io')(server);
+
+
 
 app.use(cors())
 app.use(bodyParser.json());
@@ -24,7 +29,6 @@ app.use(express.static('files'));
 app.use('/', router);  
 
                                                                                     
-
 
 
 
@@ -49,5 +53,4 @@ const PORT = process.env.PORT
 app.listen(PORT,() => {
     return console.log('Server is Listening');
 });
-
 

@@ -9,9 +9,10 @@ const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
 var nodemailer = require('nodemailer');
-const { log } = require('console');
+const { log, error } = require('console');
 const e = require('express');
-const newtoken = require('../middleware/newtoken');
+const newtoken = require('../middleware/refreshauth');
+const env = require('dotenv')
 
 // const upload = multer({storage:storage})
 // const storage = multer.memoryStorage();
@@ -599,28 +600,41 @@ module.exports.signin = async(props) => {
         var orginalPassword = password;
         const hashpassword = await bcrypt.compare(password, orginalPassword)
         const result = await db('users').select('email','password').where('email',  email).first();
-        const token = jwt.sign({email:email}, process.env.JWT_SECRET_KEY,{ expiresIn : '50s'});
-        const refreshToken = jwt.sign({email:email}, process.env.JWT_REFRESH_KEY, { expiresIn : '50s'});
+        const token = jwt.sign({email:email}, process.env.JWT_SECRET_KEY,{ expiresIn : '1m'});
+        const refreshToken = jwt.sign({email:email}, process.env.JWT_SECRET_KEY, { expiresIn : '20m'});
+        
         console.log(token);
-        result.token = token
+        result.token = token;      
         result.refreshToken = refreshToken
-        result.newtoken = newtoken
         return !_.isEmpty(result) ? result : null;
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-
-module.exports.token = async(props) => {
-    try {
-        const { token } = props
-        console.log(token);
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        req.user = decoded;
-        const newToken = jwt.sign(decoded,process.env.JWT_REFRESH_KEY, {expiresIn : '1h'})
-        return !_.isEmpty(newToken) ? newToken : null;
     } catch (error) {
         console.log(error); 
     }
 }
+
+module.exports.refreshToken = async(req, res, next) => {
+    try {
+        const refreshToken  = req.body['token']
+        console.log(refreshToken);
+        if(!refreshToken) {
+            console.log(error);
+            res.send('errro')
+        }
+        console.log(refreshToken);
+        const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET_KEY)
+        const accessToken = jwt.sign({ user: decoded.user }, process.env.JWT_SECRET_KEY, { expiresIn: '2h' })
+        console.log("accessToken", accessToken)
+        if(!_.isEmpty(accessToken)){
+            return res.send({
+                token : accessToken
+            })
+        }
+      
+
+    } catch (error) {
+        console.log(error);
+    }
+    
+}
+
+

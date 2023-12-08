@@ -762,23 +762,21 @@ module.exports.signin = async(req, res) => {
       console.log(error);
   }
   return res.send({
-      status : false,
-      message : 'Login Failed'
+      logger
   })
 }
-
-
-module.exports.token = async(req, res) => {
-  try {
-    const newToken = await authService.token(req.headers)
-    if(!_.isEmpty(newToken)){
-      res.send({
-        status : true,
-      newtoken : newToken
-      })
-    }
-    
-  } catch (error) {
-    console.log(error);
-  }
-}
+// module.exports.refreshToken = async(req, res) => {
+// try {
+//   const result = await authService.refreshToken()
+//   if(!_.isEmpty(result)) {
+//     return res.send({
+//       result
+//     })
+//   }
+// } catch (error) {
+//   console.log(error);
+// }
+// return res.send({
+//     message : 'failed'
+// })
+// }

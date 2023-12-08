@@ -1,6 +1,6 @@
-const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken")
 
-const refreshToken = (req, res, next) => {
+const newtoken = (req, res, next) => {
   const token = req.headers["auth"];
   console.log("token..",token)
   if (!token) {
@@ -17,5 +17,4 @@ const refreshToken = (req, res, next) => {
   return next();
 };
 
-
-module.exports = refreshToken;
+module.exports = newtoken;

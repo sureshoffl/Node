@@ -6,16 +6,18 @@ const fs = require('fs');
 const path  = require('path');
 const upload = require('../upload');
 const mailservice = require('../config/mailservice')
-const verifyToken = require("../middleware/auth");
-const auth = require('../middleware/logauth');
-const refreshToken = require('../middleware/refreshauth');
-const newtoken = require('../middleware/newtoken');
-const logverifyToken = require('../middleware/logauth');
+const auth = require("../middleware/auth");
+const refreshauth = require('../middleware/refreshauth');
+const logauth = require('../middleware/logauth');
+const jwt = require('jsonwebtoken');
+const env = require('dotenv');
+const authent = require('../middleware/authent')
+const authService = require('../service/authService')
+const token = require('../middleware/token')
+
 router.get('/', (req, res)=>{
     res.send('NodeJS Started')
 })
-
-
 
 router.post('/login',authController.login);
 
@@ -23,7 +25,7 @@ router.post('/addUser',authController.adduser)
 
 router.post('/product', authController.createProduct);
 
-router.get('/read', verifyToken , authController.readProduct);
+router.get('/read', auth,  authController.readProduct);
 
 router.put('/update', authController.updateProduct);
 
@@ -31,14 +33,12 @@ router.delete('/delete', authController.removeproduct);
 
 router.post('/fileupload', upload.single('file'), authController.fileupload);
 
-
-
 router.get('/fileview', authController.fileview);
 
 router.post('/sendmail', authController.sendingmail)
+
+
 // router.get("/", express.static(path.join(__dirname, "./files")));
-
-
 
 
 // router.post("/upload", upload.single('file'), (req, res) => {
@@ -59,23 +59,23 @@ router.post('/sendmail', authController.sendingmail)
 
 //Queries INNER JOIN
 
-router.get('/innerjoin',  refreshToken, authController.innerjoin);
+router.get('/innerjoin', authent, authController.innerjoin);
 
 //Queries LEFT JOIN 
 
-router.get('/leftjoin', auth, authController.leftjoin);
+router.get('/leftjoin', logauth, authController.leftjoin);
 
 //Employee Salary
-router.get('/employeesalary', refreshToken,  authController.salary);
+router.get('/employeesalary', logauth, authController.salary);
 
 //ShowEmployee
-router.get('/employee', authController.employee);
+router.get('/employee', token, authController.employee);
 
 //Employee Info
-router.get('/employeeinfo', authController.info);
+router.get('/employeeinfo', refreshauth, authController.info);
 
 //addemployee
-router.post('/addemployee', authController.addemployee);
+router.post('/addemployee', logauth, authController.addemployee);
 
 //Right Join
 router.get('/rightjoin', authController.rightjoin);
@@ -121,5 +121,28 @@ router.get('/query4', authController.query4);
 router.get('/duplicate', authController.duplicate);
 
 router.get('/signin',  authController.signin);
+
+router.post('/refreshtoken', authService.refreshToken)
+// router.post('/refresh', (req, res)=>{
+//     var refreshToken = req.headers['refreshtoken']
+//     if(!refreshToken) {
+//         return res.send('no token provided')
+//     }
+//     try {
+//         const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET_KEY)
+//         const accessToken = jwt.sign({ user: decoded.user }, process.env.JWT_SECRET_KEY, { expiresIn: '2h' })
+//         console.log("accessToken", accessToken)
+//         res.send({
+//  message : accessToken            
+//         })
+//       res.send('access' , accessToken)
+//         //console.log('decoded', decoded)
+//         console.log(refresh);
+//     } catch (error) {
+//         res.send('invalid token ')
+//         console.log(error);
+//     }
+// })
+   
 
 module.exports = router;
