@@ -66,10 +66,10 @@ router.get('/innerjoin', authent, authController.innerjoin);
 router.get('/leftjoin', logauth, authController.leftjoin);
 
 //Employee Salary
-router.get('/employeesalary', logauth, authController.salary);
+router.get('/employeesalary', authController.salary);
 
 //ShowEmployee
-router.get('/employee', token, authController.employee);
+router.get('/employee', authController.employee);
 
 //Employee Info
 router.get('/employeeinfo', refreshauth, authController.info);

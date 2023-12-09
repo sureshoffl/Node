@@ -9,10 +9,9 @@ const nodemailer = require('nodemailer');
 const mailservice = require('../config/mailservice');
 const jwt =  require('jsonwebtoken');
 const env = require('dotenv');
-const logger = require('../config/logger');
 const { error } = require("winston");
 const { response } = require("express");
-
+const logger = require('../config/winstonlogger');
 
 
 
@@ -123,7 +122,10 @@ module.exports.readProduct = async (req, res) => {
   try {
     const read = await authService.readProduct();
     if (!_.isEmpty(read)) {
-      return res.send({ status: true, message: "success", response: read });
+      return res.send({
+          status: true,
+         message: "success",
+        response: read });
     }
   } catch (error) {
     console.log(error);
@@ -300,13 +302,14 @@ module.exports.innerjoin = async (req, res) => {
  module.exports.salary =  async (req, res) => {
   try {
     const salary = await authService.salary()
+    logger.customlogger.log('info',salary)
     res.status(200)
     return res.send({
       status : true,
       values : salary
     })
   } catch (error) {
-    console.log(error);
+    logger.customlogger.log('error',error)
   }
  }
 
@@ -314,7 +317,6 @@ module.exports.innerjoin = async (req, res) => {
  module.exports.employee = async (req, res) => {
   try {
     const employee = await authService.employee(req.body)
-    console.log(employee);
     res.status(200)
     return res.send({
       status : true,

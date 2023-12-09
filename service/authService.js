@@ -12,7 +12,8 @@ var nodemailer = require('nodemailer');
 const { log, error } = require('console');
 const e = require('express');
 const newtoken = require('../middleware/refreshauth');
-const env = require('dotenv')
+const env = require('dotenv');
+const logger = require('../config/winstonlogger');
 
 // const upload = multer({storage:storage})
 // const storage = multer.memoryStorage();
